@@ -1,16 +1,21 @@
 
-
+import { useParams } from 'react-router-dom';
 import React, {useState, useEffect} from 'react';
 import './GiftDetails.css'
 
 const GiftDetails = ({data}) => {
 
     const [gift, setGift] = useState({id: 0, name: "", pricepoint: "", audience: "", image: "", description: "", submittedby: "", submittedon: ""})
-
+    const { id } = useParams();
 
     useEffect(() => {
-
-    }, []);
+        const fetchGiftById = async () => {
+            const response = await fetch(`/gifts/${id}`)
+            const data = await response.json()
+            setGift(data)
+        }
+        fetchGiftById()
+    }, [data, id]);
 
 
     return (
