@@ -20,21 +20,31 @@ const CreateGift = () => {
     })
     
     const handleChange = (event) => {
+      // destructure name and value properties from input element
+      // name -> identifies the specific input 
+      // value -> the value within the input
         const { name, value } = event.target
 
         setGift( (prev) => {
             return {
-                ...prev,
-                [name]:value,
+                ...prev,        // spread operator to create new copy of previous state of gift object
+                [name]:value,   // dynamically update whichever property to it's new value
             }
         })
     }
     
     const createGift = (event) => {
         event.preventDefault()
-
-        
-        
+        // HTTP request to create a new gift
+        const options = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(gift)
+        }
+        const response = fetch('/gifts', options)
+        window.location = '/'
     }
 
     return (
