@@ -30,7 +30,49 @@ const getGiftsById = async (req, res) => {
   }
 }
 
+const createGift = async (req, res) => {
+  try {
+    const { name, pricepoint, audience, image, description, submittedby, submittedon } = req.body
+    // insert new gift into gifts table and return all details of the newly inserted gift
+    const insertQuery = `
+      INSERT INTO GIFTS (name, pricepoint, audience, image, description, submittedby, submittedon)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      RETURNING *` 
+    const results = pool.query(insertQuery, [name, pricepoint, audience, image, description, submittedby, submittedon])
+    res.status(201).json(results.rows[0]) // 201 = created status code
+  } catch (error) {
+    res.status(409).json( {error: error.message})
+  }
+}
+
+const updateGift = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id)    // parse ID from URL parameter
+    const { name, pricepoint, audience, image, description, submittedby, submittedon } = req.body
+    const results = await pool.query(`
+      UPDATE GIFTS SET name = $1, pricepoint = $2, audience = $3, image = $4, description = $5, submittedby = $6, submittedon = $7 WHERE id = $8`,
+      [name, pricepoint, audience, image, description, submittedby, submittedon, id]
+    )
+    res.status(200).json(results.rows[0])
+  } catch (error) {
+    res.status(409).json({error: error.message})
+  }
+}
+
+const deleteGift = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id)
+    const results = await pool.query('DELETE FROM gifts WHERE id = $1', [id])
+    res.status(200).json(results.rows[0]) 
+  } catch (error) {
+    res.status(409).json({error: error.message})
+  }
+}
+
 export default {
   getGifts,
-  getGiftsById
+  getGiftsById,
+  createGift,
+  updateGift,
+  deleteGift
 }
